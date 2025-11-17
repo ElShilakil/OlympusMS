@@ -1,61 +1,102 @@
-#Para ejecutar en https://dbdiagram.io/d
-
 Table Gimnasio {
   ID_Gimnasio int [pk, increment]
-  Nombre varchar(100)
-  Direccion varchar(200)
-  Telefono varchar(20)
+  Nombre varchar
+  Direccion varchar
+  Num_Telefono varchar
+}
+
+Table Rol {
+  ID_Rol int [pk, increment]
+  Nombre_Rol varchar   // AdminGeneral, AdminSucursal, Empleado
+  Descripcion varchar
 }
 
 Table Empleado {
   ID_Empleado int [pk, increment]
-  ID_Gimnasio int [ref: > Gimnasio.ID_Gimnasio]
-  Nombre varchar(100)
-  APaterno varchar(100)
-  AMaterno varchar(100)
-  Num_Telefono varchar(20)
-  Direccion varchar(200)
+  ID_Gimnasio int       // FK
+  Nombre varchar
+  APaterno varchar
+  AMaterno varchar
+  Num_Telefono varchar
+  Direccion varchar
   Fecha_Nac date
   Fecha_Ingreso date
 }
 
+Table Usuario {
+  ID_Usuario int [pk, increment]
+  ID_Empleado int       // FK
+  ID_Rol int            // FK
+  Usuario varchar
+  PasswordHash varchar
+  Estado varchar        // Activo / Inactivo
+  Fecha_Creacion datetime
+  Ultimo_Login datetime
+}
+
 Table Miembro {
   ID_Miembro int [pk, increment]
-  ID_Gimnasio int [ref: > Gimnasio.ID_Gimnasio]
-  Nombre varchar(100)
-  APaterno varchar(100)
-  AMaterno varchar(100)
-  Num_Telefono varchar(20)
-  Direccion varchar(200)
+  ID_Gimnasio int       // Gimnasio donde se registró
+  Nombre varchar
+  APaterno varchar
+  AMaterno varchar
+  Num_Telefono varchar
+  Direccion varchar
   Fecha_Nac date
-  Fecha_Registro date
-  Foto varchar(200)
+  Fecha_Ingreso date
+  Foto varchar
 }
 
 Table Membresia {
   ID_Membresia int [pk, increment]
-  Modalidad varchar(20) // Diaria, Semanal, Mensual
-  Precio decimal(10,2)
+  Modalidad varchar      // Diaria, Semanal, Mensual
+  Precio decimal
 }
 
 Table Inscripcion {
   ID_Inscripcion int [pk, increment]
-  ID_Miembro int [ref: > Miembro.ID_Miembro]
-  ID_Membresia int [ref: > Membresia.ID_Membresia]
+  ID_Miembro int        // FK
+  ID_Membresia int      // FK
+  ID_Gimnasio_Pago int  // FK (dónde se pagó)
   Fecha_Inicio date
   Fecha_Fin date
-  Estado varchar(20) // Activa, Expirada
+  Estado varchar        // Activa, Expirada, Cancelada
 }
+
 
 Table Producto {
   ID_Producto int [pk, increment]
-  Nombre varchar(100)
-  Precio decimal(10,2)
+  Nombre varchar
+  Cantidad int
+  Precio decimal
 }
 
-Table Inventario_Gimnasio {
-  ID_Inventario int [pk, increment]
-  ID_Gimnasio int [ref: > Gimnasio.ID_Gimnasio]
-  ID_Producto int [ref: > Producto.ID_Producto]
+Table MovimientoInventario {
+  ID_Mov int [pk, increment]
+  ID_Producto int       // FK
+  ID_Empleado int       // FK (quién movió el inventario)
+  ID_Gimnasio int       // FK
+  Tipo varchar          // Entrada, Salida, Ajuste
   Cantidad int
+  Fecha datetime
+  Motivo varchar
 }
+
+///////////////////////////////////////////////////////////////
+//                           RELACIONES
+///////////////////////////////////////////////////////////////
+
+Ref: Empleado.ID_Gimnasio > Gimnasio.ID_Gimnasio
+
+Ref: Usuario.ID_Empleado > Empleado.ID_Empleado
+Ref: Usuario.ID_Rol > Rol.ID_Rol
+
+Ref: Miembro.ID_Gimnasio > Gimnasio.ID_Gimnasio
+
+Ref: Inscripcion.ID_Miembro > Miembro.ID_Miembro
+Ref: Inscripcion.ID_Membresia > Membresia.ID_Membresia
+Ref: Inscripcion.ID_Gimnasio_Pago > Gimnasio.ID_Gimnasio
+
+Ref: MovimientoInventario.ID_Producto > Producto.ID_Producto
+Ref: MovimientoInventario.ID_Empleado > Empleado.ID_Empleado
+Ref: MovimientoInventario.ID_Gimnasio > Gimnasio.ID_Gimnasio
